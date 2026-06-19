@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Khadij</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Italiana&family=Jost:wght@300;400;500&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+
+  :root{
+    --ink:#2b211c;
+    --paper:#fbf3e9;
+    --paper-deep:#f3e6d4;
+    --gold:#a9762f;
+    --gold-soft:#c79a52;
+    --rose:#9c4f4a;
+    --line: rgba(43,33,28,0.18);
+    --mono: 'JetBrains Mono', monospace;
+    --syn-kw:#7d8f69;
+    --syn-type:#a9762f;
+    --syn-str:#9c4f4a;
+    --syn-com:#a08e7c;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:50;
+    opacity:0.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- COVER ---------- */
+  .cover{
+    height:100vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    cursor:pointer;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 30%, rgba(201,154,82,0.18), transparent 70%),
+      var(--paper);
+    text-align:center;
+    padding:0 24px;
+  }
+
+  .cover-frame{
+    position:absolute; inset:28px;
+    border:1px solid var(--line);
+    pointer-events:none;
+  }
+  .cover-frame::before, .cover-frame::after{
+    content:'';
+    position:absolute;
+    width:34px; height:34px;
+    border:1px solid var(--gold-soft);
+  }
+  .cover-frame::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .cover-frame::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+  .eyebrow{
+    font-family:'Jost', sans-serif;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--gold);
+    margin-bottom:22px;
+    opacity:0;
+    animation: fadeUp 1.2s ease forwards 0.3s;
+  }
+
+  .cover h1{
+    font-family:'Italiana', serif;
+    font-size:clamp(48px, 11vw, 108px);
+    line-height:0.95;
+    color:var(--ink);
+    opacity:0;
+    animation: fadeUp 1.4s ease forwards 0.6s;
+  }
+
+  .cover .sub{
+    margin-top:20px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:clamp(16px, 2.6vw, 22px);
+    color:#5a4a3f;
+    opacity:0;
+    animation: fadeUp 1.4s ease forwards 1s;
+  }
+
+  .open-hint{
+    position:absolute;
+    bottom:48px;
+    font-size:11px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+    opacity:0;
+    animation: fadeUp 1.2s ease forwards 1.6s, pulse 2.4s ease-in-out infinite 2.8s;
+  }
+
+  .boot{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--syn-com);
+    margin-bottom:18px;
+    opacity:0;
+    animation: fadeUp 0.8s ease forwards 0s;
+  }
+  .boot .kw{ color:var(--syn-kw); }
+  .boot .ty{ color:var(--syn-type); }
+  .boot .cursor{
+    display:inline-block;
+    width:7px; height:14px;
+    background:var(--gold-soft);
+    margin-left:2px;
+    vertical-align:-2px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:0.45; }
+    50%{ opacity:1; }
+  }
+
+  .cover.opened{ animation: fadeOutCover 0.9s ease forwards; pointer-events:none; }
+  @keyframes fadeOutCover{ to{ opacity:0; visibility:hidden; } }
+
+  /* ---------- MAIN CONTENT ---------- */
+  .content{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  section{
+    padding:140px 0;
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity 1s ease, transform 1s ease;
+  }
+  section.visible{ opacity:1; transform:translateY(0); }
+
+  .divider{
+    width:1px; height:64px;
+    background:linear-gradient(var(--gold-soft), transparent);
+    margin:0 auto;
+  }
+
+  .label{
+    text-align:center;
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.05em;
+    color:var(--syn-com);
+    margin-bottom:28px;
+  }
+
+  /* ---------- CODE BLOCK (signature element) ---------- */
+  .code-block{
+    background:#2b211c;
+    color:#e8dcc8;
+    border-radius:6px;
+    padding:32px 28px;
+    font-family:var(--mono);
+    font-size:clamp(13px, 2.6vw, 15.5px);
+    line-height:1.85;
+    max-width:560px;
+    margin:0 auto;
+    box-shadow:0 18px 40px -12px rgba(43,33,28,0.35);
+    position:relative;
+    overflow-x:auto;
+  }
+  .code-block::before{
+    content:'';
+    position:absolute;
+    top:14px; left:18px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:#9c4f4a;
+    box-shadow:16px 0 0 #c79a52, 32px 0 0 #7d8f69;
+  }
+  .code-block code{
+    display:block;
+    margin-top:18px;
+    white-space:pre-wrap;
+  }
+  .code-block .kw{ color:#9fb285; }
+  .code-block .ty{ color:#d8ab68; }
+  .code-block .str{ color:#c98a86; }
+  .code-block .com{ color:#7a6a5d; }
+  .code-block .fn{ color:#e8c87e; }
+
+  /* ---------- LETTER (terminal output) ---------- */
+  .letter{
+    background:#2b211c;
+    color:#e8dcc8;
+    border-radius:6px;
+    padding:34px 30px;
+    font-family:var(--mono);
+    font-size:clamp(13.5px, 2.4vw, 15px);
+    line-height:2;
+    max-width:580px;
+    margin:0 auto;
+    box-shadow:0 18px 40px -12px rgba(43,33,28,0.35);
+    position:relative;
+  }
+  .letter::before{
+    content:'';
+    position:absolute;
+    top:14px; left:18px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:#9c4f4a;
+    box-shadow:16px 0 0 #c79a52, 32px 0 0 #7d8f69;
+  }
+  .letter .prompt{
+    color:var(--syn-com,#7a6a5d);
+    margin-top:18px;
+    display:block;
+  }
+  .letter .out{
+    color:#e8dcc8;
+    display:block;
+    margin-top:10px;
+  }
+  .letter .sign{
+    color:#d8ab68;
+    display:block;
+    margin-top:18px;
+  }
+
+  .lead{
+    font-family:'Italiana', serif;
+    font-size:clamp(28px, 5vw, 44px);
+    text-align:center;
+    line-height:1.3;
+    color:var(--ink);
+  }
+
+  .lead em{
+    font-style:normal;
+    color:var(--rose);
+  }
+
+  .body-text{
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(19px, 2.4vw, 23px);
+    line-height:1.85;
+    color:#4a3c33;
+    text-align:center;
+    margin-top:28px;
+  }
+
+  .body-text + .body-text{ margin-top:22px; }
+
+  /* unexpected gift section */
+  .gift-wrap{
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+  }
+  .gift-mark{
+    font-family:'Italiana', serif;
+    font-size:14px;
+    letter-spacing:0.25em;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .gift-line{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:clamp(22px,3.4vw,30px);
+    line-height:1.5;
+    max-width:520px;
+  }
+
+  /* now my life — signature element */
+  .now-life{
+    text-align:center;
+    position:relative;
+  }
+  .now-life .big{
+    font-family:'Italiana', serif;
+    font-size:clamp(40px, 9vw, 92px);
+    line-height:1;
+    color:var(--ink);
+    position:relative;
+    display:inline-block;
+  }
+  .now-life .big .accent{
+    color:var(--rose);
+    position:relative;
+  }
+  .now-life .big .accent::after{
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:-6px;
+    height:1px;
+    background:var(--gold-soft);
+    transform-origin:left;
+    transform:scaleX(0);
+    transition:transform 1.4s ease 0.5s;
+  }
+  section.visible .now-life .big .accent::after{ transform:scaleX(1); }
+
+  /* timeline-ish counter: years married, framed as a single number not a sequence */
+  .anniv-number{
+    text-align:center;
+    margin-top:14px;
+  }
+  .anniv-number .num{
+    font-family:'Italiana', serif;
+    font-size:120px;
+    line-height:1;
+    color:var(--paper-deep);
+    -webkit-text-stroke: 1px var(--gold-soft);
+    color:transparent;
+  }
+  .anniv-number .cap{
+    font-size:11px;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-top:4px;
+  }
+
+  /* closing / signature */
+  .closing{
+    text-align:center;
+    padding-bottom:200px;
+  }
+  .closing .to{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:20px;
+    color:#5a4a3f;
+    margin-bottom:32px;
+  }
+  .closing .name{
+    font-family:'Italiana', serif;
+    font-size:clamp(56px, 12vw, 130px);
+    color:var(--ink);
+  }
+  .closing .heart{
+    margin-top:36px;
+    color:var(--rose);
+    font-size:22px;
+  }
+  .closing .from{
+    margin-top:60px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:18px;
+    color:#7a6a5d;
+  }
+
+  footer{
+    text-align:center;
+    padding:40px 0 60px;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:#a08e7c;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  @media (max-width:520px){
+    section{ padding:90px 0; }
+    .anniv-number .num{ font-size:84px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<!-- COVER / GATE -->
+<div class="cover" id="cover">
+  <div class="cover-frame"></div>
+  <div class="boot">&gt; <span class="kw">#include</span> <span class="ty">&lt;forever.h&gt;</span><span class="cursor"></span></div>
+  <div class="eyebrow">A first anniversary</div>
+  <h1>For Khadij</h1>
+  <div class="sub">click anywhere to open</div>
+  <div class="open-hint">tap to begin</div>
+</div>
+
+<div class="content">
+
+  <section id="s1">
+    <div class="label">// one year ago</div>
+    <p class="lead">I wasn't looking for anything.<br>Then <em>you</em> arrived.</p>
+    <p class="body-text">No warning, no plan — just one ordinary day that quietly became the day everything changed.</p>
+    <div class="divider"></div>
+  </section>
+
+  <section id="s2" class="gift-wrap">
+    <div class="gift-mark">The unexpected gift</div>
+    <p class="gift-line">You were the best present I never asked for —<br>the kind that arrives without a box or a bow,<br>and turns out to be exactly what was missing.</p>
+    <div class="divider"></div>
+  </section>
+
+  <section id="s3" class="now-life">
+    <div class="label">// status: today</div>
+    <div class="code-block">
+      <code><span class="kw">struct</span> <span class="fn">Life</span> {
+  <span class="ty">std::string</span> meaning = <span class="str">"Khadij"</span>;
+  <span class="ty">bool</span> complete = <span class="kw">true</span>; <span class="com">// since the day you arrived</span>
+};</code>
+    </div>
+    <div class="anniv-number">
+      <div class="num">01</div>
+      <div class="cap">year together</div>
+    </div>
+  </section>
+
+  <section id="s4">
+    <div class="label">// to you</div>
+    <p class="body-text">Every ordinary day with you has quietly become one I'd choose again. Thank you for walking in unannounced and staying.</p>
+    <p class="body-text">Here's to every year after this one.</p>
+    <div class="divider"></div>
+  </section>
+
+  <section id="s4b">
+    <div class="label">// a letter, compiled by hand</div>
+    <div class="letter">
+      <span class="prompt">$ cat letter_to_khadij.txt</span>
+      <span class="out">I never planned for you. You arrived unannounced and quietly rewrote everything. You were the best present I never asked for — unexpected, undeserved, and exactly what I needed. A year later, I'm still amazed you're mine. You're not just part of my life anymore. You are my life.</span>
+      <span class="sign">— from me, with everything I have</span>
+    </div>
+  </section>
+
+  <section id="s5" class="closing">
+    <p class="to">Happy first anniversary,</p>
+    <p class="name">Khadij</p>
+    <p class="heart">&#10073;</p>
+    <p class="from">&gt; build succeeded — 1 year, 0 regrets<br>always yours</p>
+  </section>
+
+</div>
+
+<footer>made with love, just for you</footer>
+
+<script>
+  const cover = document.getElementById('cover');
+  cover.addEventListener('click', () => {
+    cover.classList.add('opened');
+    document.body.style.overflow = 'auto';
+  });
+
+  // reveal on scroll
+  const sections = document.querySelectorAll('section');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.25 });
+  sections.forEach(s => obs.observe(s));
+</script>
+
+</body>
+</html>
